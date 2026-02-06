@@ -444,36 +444,5 @@
   </form>
 
   </div>
-
-  <script>
-    (function(){
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('success') === 'true') {
-        const s = document.getElementById('successBox');
-        if (s) s.style.display = 'block';
-        if (window.history && window.history.replaceState) {
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      }
-      const form = document.getElementById('glampingForm');
-      const errorBox = document.getElementById('errorBox');
-      if (!form) return;
-
-      form.addEventListener('invalid', function(e){
-        const details = e.target.closest('details');
-        if (details && !details.open) details.open = true;
-      }, true);
-
-      form.addEventListener('submit', function(){
-        if (errorBox) errorBox.style.display = 'none';
-      });
-
-      window.addEventListener('offline', function(){
-        if (errorBox) errorBox.style.display = 'block';
-      });
-    })();
-  </script>
-
-
 </body>
 </html>

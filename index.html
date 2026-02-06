@@ -17,7 +17,6 @@
             <path d="M9 22V12h6v10" stroke="rgba(230,237,246,.95)" stroke-width="1.6"/>
           </svg>
         </div>
-        <h3>kdwiduwdiugbwwibvdw</h3>
         <div>
           <h1>Formulario de requerimientos</h1>
           <p class="sub">Sitio web para glamping. Completa la información con el mayor detalle posible. Los campos marcados con * son obligatorios.</p>
@@ -25,17 +24,10 @@
       </div>
     </header>
 
-    <div id="successBox" class="success" role="status" aria-live="polite">
-      <strong>Enviado.</strong> Recibimos tu información. Nos pondremos en contacto para los siguientes pasos.
-      <div class="small">Si necesitas actualizar algo, vuelve a completar el formulario.</div>
-    </div>
-
     <div class="card">
       <div class="card-head">
-        <div>
-          <h2>Datos del proyecto</h2>
-        </div>
-        <p class="hint mono">v1.0</p>
+        <div><h2>Datos del proyecto</h2></div>
+        <p class="hint mono">v1.1</p>
       </div>
 
       <form id="glampingForm"
@@ -426,26 +418,66 @@
             <textarea id="booking_notes" name="Reservas - Notas" placeholder="Ej: temporadas, reglas de cancelación, depósitos, check-in/out, disponibilidad en tiempo real, etc."></textarea>
           </div>
         </details>
-        <div class="actions">
-          <button class="btn" type="submit">Enviar información</button>
-          <p class="note">Al enviar, la respuesta quedará registrada</p>
-        </div>
 
-        <div id="errorBox" class="error" role="alert">
-          No se pudo enviar en este momento. Verifica tu conexión e intenta de nuevo.
+        <div class="actions">
+          <button class="btn" id="submitBtn" type="submit">Enviar información</button>
+          <p class="note">Al enviar, la respuesta quedará registrada en Netlify.</p>
         </div>
       </form>
     </div>
   </div>
 
-  <div>
-    <form name="glamping-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
-  <input type="hidden" name="form-name" value="glamping-web" />
-  <input name="bot-field" />
+  <!-- Form oculto: fuerza detección por Netlify -->
+  <form name="glamping-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="glamping-web" />
+    <input name="bot-field" />
   </form>
 
-  
+  <script>
+    // Envío por AJAX (sin redirección) compatible con Netlify Forms
+    (function () {
+      const form = document.getElementById("glampingForm");
+      const btn = document.getElementById("submitBtn");
+      if (!form) return;
 
-  </div>
+      function encode(formData) {
+        const params = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+          params.append(key, value);
+        }
+        return params.toString();
+      }
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const originalText = btn ? btn.textContent : "";
+        if (btn) { btn.disabled = true; btn.textContent = "Enviando..."; }
+
+        try {
+          const body = encode(new FormData(form));
+          const res = await fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body
+          });
+
+          if (!res.ok) throw new Error("HTTP " + res.status);
+
+          alert("Enviado. Recibimos tu información.");
+          form.reset();
+        } catch (err) {
+          alert("No se pudo enviar. Intenta nuevamente.");
+        } finally {
+          if (btn) { btn.disabled = false; btn.textContent = originalText; }
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

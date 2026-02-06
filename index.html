@@ -42,7 +42,6 @@
             method="POST"
             data-netlify="true"
             netlify-honeypot="bot-field"
-            enctype="multipart/form-data"
             action="/?success=true">
 
         <input type="hidden" name="form-name" value="glamping-web" />
@@ -440,6 +439,11 @@
 
   </div>
 
+  <form name="glamping-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="glamping-web" />
+  <input name="bot-field" />
+  </form>
+
   <script>
     (function(){
       const params = new URLSearchParams(window.location.search);
@@ -468,5 +472,7 @@
       });
     })();
   </script>
+
+
 </body>
 </html>

@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Formulario de Requerimientos – Sitio Web para Glamping</title>
+  <meta name="description" content="Formulario profesional para levantar requerimientos de un sitio web de glamping. Compatible con Netlify Forms." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1a30;
+      --card2:#0c162b;
+      --text:#e6edf6;
+      --muted:#a9b6cc;
+      --line:rgba(255,255,255,.10);
+      --accent:#4aa3ff;
+      --accent2:#7dd3fc;
+      --danger:#ff6b6b;
+      --ok:#2dd4bf;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% -10%, rgba(74,163,255,.18), transparent 55%),
+        radial-gradient(900px 700px at 90% 0%, rgba(125,211,252,.14), transparent 55%),
+        radial-gradient(900px 700px at 40% 120%, rgba(45,212,191,.10), transparent 50%),
+        var(--bg);
+      line-height:1.45;
+    }
+    a{color:var(--accent2); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:980px; margin:0 auto; padding:32px 18px 64px;}
+    header{display:flex; gap:16px; align-items:flex-start; justify-content:space-between; margin-bottom:18px;}
+    .brand{display:flex; gap:14px; align-items:flex-start;}
+    .badge{
+      width:44px;height:44px;border-radius:14px;
+      background:linear-gradient(145deg, rgba(74,163,255,.35), rgba(125,211,252,.10));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+      display:grid;place-items:center;flex:0 0 auto;
+    }
+    .badge svg{opacity:.95}
+    h1{font-size:clamp(22px, 2.3vw, 32px); margin:0; letter-spacing:.2px;}
+    .sub{margin:6px 0 0; color:var(--muted); max-width:70ch; font-size:14.5px;}
+    .top-actions{display:flex; gap:10px; align-items:center; margin-top:2px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12.5px;
+      display:flex; gap:8px; align-items:center;
+      user-select:none;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    .card-head h2{margin:0; font-size:15px; color:var(--text); letter-spacing:.2px;}
+    .hint{margin:0; color:var(--muted); font-size:12.5px;}
+    form{padding:16px 18px 20px;}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+    @media (max-width:820px){
+      header{flex-direction:column; align-items:stretch;}
+      .top-actions{justify-content:flex-start;}
+      .grid{grid-template-columns:1fr;}
+    }
+    details{
+      border:1px solid var(--line);
+      border-radius:var(--radius2);
+      background:rgba(12,22,43,.55);
+      overflow:hidden;
+    }
+    details + details{margin-top:12px;}
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 14px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      background:rgba(255,255,255,.03);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      user-select:none;
+    }
+    summary::-webkit-details-marker{display:none;}
+    .sum-left{display:flex; flex-direction:column; gap:2px; min-width:0;}
+    .sum-title{margin:0; font-size:14px; letter-spacing:.2px;}
+    .sum-desc{margin:0; font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .chev{
+      width:30px;height:30px;border-radius:10px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      flex:0 0 auto;
+      transition:transform .2s ease;
+    }
+    details[open] .chev{transform:rotate(180deg);}
+    .section{padding:14px 14px 16px;}
+    label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px;}
+    .req::after{content:" *"; color:var(--accent2);}
+    input, select, textarea{
+      width:100%;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      border-radius:12px;
+      padding:11px 12px;
+      outline:none;
+      font-size:14px;
+      transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+    textarea{min-height:92px; resize:vertical;}
+    input::placeholder, textarea::placeholder{color:rgba(169,182,204,.65);}
+    input:focus, select:focus, textarea:focus{
+      border-color:rgba(74,163,255,.55);
+      box-shadow:0 0 0 4px rgba(74,163,255,.16);
+      background:rgba(255,255,255,.05);
+    }
+    .choices{display:flex; flex-wrap:wrap; gap:10px 12px; padding:4px 0 2px;}
+    .chip{
+      display:flex; align-items:center; gap:8px;
+      padding:9px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-size:13px;
+    }
+    .chip input{width:auto; margin:0; accent-color:var(--accent);}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+    @media (max-width:820px){.row{grid-template-columns:1fr;}}
+    .divider{height:1px; background:rgba(255,255,255,.08); margin:14px 0;}
+    .actions{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,.10);
+    }
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:650; letter-spacing:.2px;
+      color:#06101f;
+      background:linear-gradient(135deg, rgba(74,163,255,1), rgba(125,211,252,1));
+      box-shadow:0 14px 30px rgba(74,163,255,.18);
+      transition:transform .12s ease, filter .12s ease;
+    }
+    .btn:hover{filter:brightness(1.02);}
+    .btn:active{transform:translateY(1px);}
+    .note{color:var(--muted); font-size:12.5px; margin:0;}
+    .success{
+      display:none;
+      padding:16px 18px;
+      border-radius:var(--radius);
+      border:1px solid rgba(45,212,191,.35);
+      background:rgba(45,212,191,.08);
+      box-shadow:0 16px 40px rgba(0,0,0,.22);
+      margin:12px 0 18px;
+    }
+    .success strong{color:var(--ok);}
+    .error{
+      display:none;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,107,107,.35);
+      background:rgba(255,107,107,.08);
+      margin-top:10px;
+      color:#ffd7d7;
+      font-size:13px;
+    }
+    footer{margin-top:18px; color:rgba(169,182,204,.75); font-size:12px;}
+    .small{font-size:12px; color:rgba(169,182,204,.75); margin:8px 0 0;}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    option{color: #06101f;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="badge" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l8 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8l8-6Z" stroke="rgba(230,237,246,.95)" stroke-width="1.6"/>
+            <path d="M9 22V12h6v10" stroke="rgba(230,237,246,.95)" stroke-width="1.6"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Formulario de requerimientos</h1>
+          <p class="sub">Sitio web para glamping. Completa la información con el mayor detalle posible. Los campos marcados con * son obligatorios.</p>
+        </div>
+      </div>
+    </header>
+
+    <div id="successBox" class="success" role="status" aria-live="polite">
+      <strong>Enviado.</strong> Recibimos tu información. Nos pondremos en contacto para los siguientes pasos.
+      <div class="small">Si necesitas actualizar algo, vuelve a completar el formulario.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Datos del proyecto</h2>
+        </div>
+        <p class="hint mono">v1.0</p>
+      </div>
+
+      <form id="glampingForm"
+            name="glamping-web"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="bot-field"
+            enctype="multipart/form-data"
+            action="/?success=true">
+
+        <input type="hidden" name="form-name" value="glamping-web" />
+
+        <p style="display:none">
+          <label>No llenar: <input name="bot-field" /></label>
+        </p>
+
+        <details open>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">Contacto</p>
+              <p class="sum-desc">Datos de la persona responsable</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="grid">
+              <div>
+                <label class="req" for="contact_name">Nombre del contacto</label>
+                <input id="contact_name" name="Contacto - Nombre" type="text" placeholder="Nombre y apellido" required />
+              </div>
+              <div>
+                <label class="req" for="contact_role">Cargo / Rol</label>
+                <input id="contact_role" name="Contacto - Rol" type="text" placeholder="Propietario(a), administrador(a), marketing, etc." required />
+              </div>
+              <div>
+                <label class="req" for="contact_email">Correo</label>
+                <input id="contact_email" name="Contacto - Correo" type="email" placeholder="correo@ejemplo.com" required />
+              </div>
+              <div>
+                <label class="req" for="contact_phone">WhatsApp / Teléfono</label>
+                <input id="contact_phone" name="Contacto - Teléfono" type="tel" placeholder="+57 3xx xxx xxxx" required />
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details open>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">1) Información general</p>
+              <p class="sum-desc">Nombre, ubicación y estado del proyecto</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="grid">
+              <div>
+                <label class="req" for="g_name">Nombre del glamping</label>
+                <input id="g_name" name="Glamping - Nombre" type="text" placeholder="Ej: Bosque Alto Glamping" required />
+              </div>
+              <div>
+                <label class="req" for="g_location">Ubicación (país, región, municipio)</label>
+                <input id="g_location" name="Glamping - Ubicación" type="text" placeholder="Ej: Colombia, Cundinamarca, La Calera" required />
+              </div>
+              <div>
+                <label class="req" for="g_status">Estado del proyecto</label>
+                <select id="g_status" name="Glamping - Estado" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>En funcionamiento</option>
+                  <option>En desarrollo</option>
+                  <option>En etapa de idea</option>
+                </select>
+              </div>
+              <div>
+                <label for="g_open_date">Fecha estimada de apertura (si aplica)</label>
+                <input id="g_open_date" name="Glamping - Fecha de apertura" type="date" />
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">2) Objetivos del sitio</p>
+              <p class="sum-desc">Qué debe lograr el sitio web</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="row">
+              <div>
+                <label class="req" for="site_goal">Objetivo principal</label>
+                <select id="site_goal" name="Sitio - Objetivo principal" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Reservas directas</option>
+                  <option>Información institucional</option>
+                  <option>Posicionamiento de marca</option>
+                  <option>Captación de contactos (leads)</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+              <div>
+                <label class="req" for="site_action">Acción principal esperada del visitante</label>
+                <input id="site_action" name="Sitio - Acción principal" type="text" placeholder="Ej: Reservar una noche para 2 personas" required />
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <label for="site_kpi">¿Cómo medirías el éxito del sitio? (opcional)</label>
+            <textarea id="site_kpi" name="Sitio - Indicadores de éxito" placeholder="Ej: 30 reservas/mes, 200 leads/mes, mayor tráfico orgánico, etc."></textarea>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">3) Público objetivo</p>
+              <p class="sum-desc">A quién le vendes y en qué idioma</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="row">
+              <div>
+                <label class="req">Tipo de huésped principal</label>
+                <div class="choices">
+                  <label class="chip"><input type="checkbox" name="Público - Tipo de huésped" value="Parejas"> Parejas</label>
+                  <label class="chip"><input type="checkbox" name="Público - Tipo de huésped" value="Familias"> Familias</label>
+                  <label class="chip"><input type="checkbox" name="Público - Tipo de huésped" value="Aventureros"> Aventureros</label>
+                  <label class="chip"><input type="checkbox" name="Público - Tipo de huésped" value="Turistas extranjeros"> Turistas extranjeros</label>
+                  <label class="chip"><input type="checkbox" name="Público - Tipo de huésped" value="Premium"> Segmento premium</label>
+                </div>
+                <p class="small">Puedes marcar más de una opción.</p>
+              </div>
+              <div>
+                <label class="req" for="aud_scope">Tipo de público</label>
+                <select id="aud_scope" name="Público - Alcance" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Nacional</option>
+                  <option>Internacional</option>
+                  <option>Ambos</option>
+                </select>
+
+                <div style="height:10px"></div>
+
+                <label for="aud_age">Rango de edad aproximado (opcional)</label>
+                <input id="aud_age" name="Público - Rango de edad" type="text" placeholder="Ej: 25–45" />
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <label class="req">Idiomas del sitio</label>
+            <div class="choices">
+              <label class="chip"><input type="checkbox" name="Sitio - Idiomas" value="Español" checked> Español</label>
+              <label class="chip"><input type="checkbox" name="Sitio - Idiomas" value="Inglés"> Inglés</label>
+              <label class="chip"><input type="checkbox" name="Sitio - Idiomas" value="Otro"> Otro</label>
+            </div>
+            <div style="height:10px"></div>
+            <label for="aud_lang_other">Si marcaste “Otro”, ¿cuál? (opcional)</label>
+            <input id="aud_lang_other" name="Sitio - Idioma otro" type="text" placeholder="Ej: Portugués" />
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">4) Identidad visual</p>
+              <p class="sum-desc">Logo, estilo y referencias</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="row">
+              <div>
+                <label class="req" for="has_logo">¿Cuenta con logo?</label>
+                <select id="has_logo" name="Marca - Logo" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Sí</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div>
+                <label class="req" for="has_brand">¿Cuenta con manual de marca?</label>
+                <select id="has_brand" name="Marca - Manual de marca" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Sí</option>
+                  <option>No</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <label class="req">Estilo que desea transmitir</label>
+            <div class="choices">
+              <label class="chip"><input type="checkbox" name="Marca - Estilo" value="Natural / ecológico"> Natural / ecológico</label>
+              <label class="chip"><input type="checkbox" name="Marca - Estilo" value="Rústico"> Rústico</label>
+              <label class="chip"><input type="checkbox" name="Marca - Estilo" value="Minimalista"> Minimalista</label>
+              <label class="chip"><input type="checkbox" name="Marca - Estilo" value="Lujo"> Lujo</label>
+              <label class="chip"><input type="checkbox" name="Marca - Estilo" value="Otro"> Otro</label>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <label for="refs">Sitios web de referencia (links)</label>
+            <textarea id="refs" name="Marca - Referencias" placeholder="Pega aquí 1 o varios links y comenta qué te gusta de cada uno."></textarea>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">5) Contenidos</p>
+              <p class="sum-desc">Secciones, fotos y textos</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <label class="req">Secciones deseadas</label>
+            <div class="choices">
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Inicio"> Inicio</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Sobre el glamping"> Sobre el glamping</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Alojamiento"> Alojamiento</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Experiencias"> Experiencias</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Galería"> Galería</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Tarifas"> Tarifas</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Reservas"> Reservas</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Preguntas frecuentes"> Preguntas frecuentes</label>
+              <label class="chip"><input type="checkbox" name="Contenido - Secciones" value="Contacto"> Contacto</label>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <div>
+                <label class="req" for="assets">¿Cuenta con textos e imágenes profesionales?</label>
+                <select id="assets" name="Contenido - Disponibilidad" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Sí, completos</option>
+                  <option>Parcialmente</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div>
+                <label class="req" for="story">¿Desea destacar historia / filosofía / enfoque sustentable?</label>
+                <select id="story" name="Contenido - Historia / Sustentabilidad" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Sí</option>
+                  <option>No</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <label for="content_notes">Notas de contenido (opcional)</label>
+            <textarea id="content_notes" name="Contenido - Notas" placeholder="Ej: tono de comunicación, mensajes clave, políticas, reglas del lugar, etc."></textarea>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">6) Alojamiento y servicios</p>
+              <p class="sum-desc">Unidades, servicios y experiencias</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="grid">
+              <div>
+                <label class="req" for="lodging_type">Tipo de alojamiento</label>
+                <input id="lodging_type" name="Alojamiento - Tipo" type="text" placeholder="Ej: domos, cabañas, tiendas safari" required />
+              </div>
+              <div>
+                <label class="req" for="units">Cantidad de unidades</label>
+                <input id="units" name="Alojamiento - Cantidad" type="number" min="0" placeholder="Ej: 8" required />
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <label class="req" for="services">Servicios incluidos</label>
+            <textarea id="services" name="Alojamiento - Servicios incluidos" placeholder="Ej: desayuno, jacuzzi, fogata, calefacción, wifi, parqueadero..." required></textarea>
+
+            <div style="height:10px"></div>
+
+            <label class="req" for="paid_exp">¿Ofrece experiencias adicionales pagas?</label>
+            <select id="paid_exp" name="Experiencias - Adicionales pagas" required>
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option>Sí</option>
+              <option>No</option>
+            </select>
+
+            <div style="height:10px"></div>
+
+            <label for="exp_list">Si la respuesta es “Sí”, describe cuáles (opcional)</label>
+            <textarea id="exp_list" name="Experiencias - Lista" placeholder="Ej: tours, spa, cabalgatas, picnic, kayak..."></textarea>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <div class="sum-left">
+              <p class="sum-title">7) Reservas y pagos</p>
+              <p class="sum-desc">Motor de reservas, plataformas y pagos</p>
+            </div>
+            <div class="chev" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="rgba(230,237,246,.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </summary>
+          <div class="section">
+            <div class="row">
+              <div>
+                <label class="req" for="booking_online">¿Desea sistema de reservas online?</label>
+                <select id="booking_online" name="Reservas - Sistema online" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Sí</option>
+                  <option>No (solo contacto)</option>
+                </select>
+              </div>
+              <div>
+                <label class="req" for="pay_online">¿Aceptará pagos online?</label>
+                <select id="pay_online" name="Pagos - Online" required>
+                  <option value="" disabled selected>Selecciona una opción</option>
+                  <option>Sí</option>
+                  <option>No</option>
+                  <option>No estoy seguro(a)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <label>Métodos de pago preferidos (si aplica)</label>
+            <div class="choices">
+              <label class="chip"><input type="checkbox" name="Pagos - Métodos" value="Tarjeta"> Tarjeta</label>
+              <label class="chip"><input type="checkbox" name="Pagos - Métodos" value="Transferencia"> Transferencia</label>
+              <label class="chip"><input type="checkbox" name="Pagos - Métodos" value="PayPal"> PayPal</label>
+              <label class="chip"><input type="checkbox" name="Pagos - Métodos" value="Efectivo"> Efectivo</label>
+              <label class="chip"><input type="checkbox" name="Pagos - Métodos" value="Otro"> Otro</label>
+            </div>
+
+            <div class="divider"></div>
+
+            <label>¿Utiliza plataformas externas actualmente?</label>
+            <div class="choices">
+              <label class="chip"><input type="checkbox" name="Reservas - Plataformas" value="Airbnb"> Airbnb</label>
+              <label class="chip"><input type="checkbox" name="Reservas - Plataformas" value="Booking"> Booking</label>
+              <label class="chip"><input type="checkbox" name="Reservas - Plataformas" value="Otra"> Otra</label>
+              <label class="chip"><input type="checkbox" name="Reservas - Plataformas" value="Ninguna"> Ninguna</label>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <label for="booking_notes">Detalles de reservas (opcional)</label>
+            <textarea id="booking_notes" name="Reservas - Notas" placeholder="Ej: temporadas, reglas de cancelación, depósitos, check-in/out, disponibilidad en tiempo real, etc."></textarea>
+          </div>
+        </details>
+        <div class="actions">
+          <button class="btn" type="submit">Enviar información</button>
+          <p class="note">Al enviar, la respuesta quedará registrada</p>
+        </div>
+
+        <div id="errorBox" class="error" role="alert">
+          No se pudo enviar en este momento. Verifica tu conexión e intenta de nuevo.
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('success') === 'true') {
+        const s = document.getElementById('successBox');
+        if (s) s.style.display = 'block';
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+      const form = document.getElementById('glampingForm');
+      const errorBox = document.getElementById('errorBox');
+      if (!form) return;
+
+      form.addEventListener('invalid', function(e){
+        const details = e.target.closest('details');
+        if (details && !details.open) details.open = true;
+      }, true);
+
+      form.addEventListener('submit', function(){
+        if (errorBox) errorBox.style.display = 'none';
+      });
+
+      window.addEventListener('offline', function(){
+        if (errorBox) errorBox.style.display = 'block';
+      });
+    })();
+  </script>
+</body>
+</html>
